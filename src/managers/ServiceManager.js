@@ -1,94 +1,102 @@
 import fs from 'node:fs/promises'
 import { generateId } from '../utils/generateId.js'
 
-const filePath = './src/data/services.json'
+export class ServiceManager {
+  constructor(path) {
+    this._path = path
+  }
 
-const readServices = async () => {
-  try {
-    const data = await fs.readFile(filePath, 'utf-8')
-    return JSON.parse(data)
-  } catch (error) {
-    return []
+  get path() {
+    return this._path
+  }
+
+  async _readServices() {
+    try {
+      const data = await fs.readFile(this._path, 'utf-8')
+      return JSON.parse(data)
+    } catch {
+      return []
+    }
+  }
+
+  async _writeServices(services) {
+    await fs.writeFile(this._path, JSON.stringify(services, null, 2))
+  }
+
+  async getServices() {
+    return await this._readServices()
+  }
+
+  async getServiceById(id) {
+    const services = await this._readServices()
+    const service = services.find(s => s.id === Number(id))
+    return service ?? null
+  }
+
+  async addService(serviceData) {
+    const { name, description, duration, price, category, available } = serviceData
+
+    if (!name || !description || !duration || !price || !category || available === undefined) {
+      return null
+    }
+
+    const services = await this._readServices()
+    const newService = {
+      id: generateId(services),
+      name,
+      description,
+      duration,
+      price,
+      category,
+      available
+    }
+
+    services.push(newService)
+    await this._writeServices(services)
+
+    return newService
+  }
+
+  async updateService(id, serviceData) {
+    const services = await this._readServices()
+    const index = services.findIndex(s => s.id === Number(id))
+
+    if (index === -1) return null
+
+    const { name, description, duration, price, category, available } = serviceData
+
+    if (!name || !description || !duration || !price || !category || available === undefined) {
+      return null
+    }
+
+    const updatedService = {
+      ...services[index],
+      name,
+      description,
+      duration,
+      price,
+      category,
+      available,
+      id: services[index].id
+    }
+
+    services[index] = updatedService
+    await this._writeServices(services)
+
+    return updatedService
+  }
+
+  async deleteService(id) {
+    const services = await this._readServices()
+    const index = services.findIndex(s => s.id === Number(id))
+
+    if (index === -1) return null
+
+    const [deleted] = services.splice(index, 1)
+    await this._writeServices(services)
+
+    return deleted
   }
 }
 
-const writeServices = async (services) => {
-  await fs.writeFile(filePath, JSON.stringify(services, null, 2))
-}
-
-export const getServices = async () => {
-  return await readServices()
-}
-
-export const getServiceById = async (id) => {
-  const services = await readServices()
-  const service = services.find(service => service.id === Number(id))
-
-  if (!service) return null
-  return service
-}
-
-export const addService = async (serviceData) => {
-  const { name, description, duration, price, category, available } = serviceData
-
-  if (!name || !description || !duration || !price || !category || available === undefined) {
-    return null
-  }
-
-  const services = await readServices()
-  const newService = {
-    id: generateId(services),
-    name,
-    description,
-    duration,
-    price,
-    category,
-    available
-  }
-
-  services.push(newService)
-  await writeServices(services)
-
-  return newService
-}
-
-export const updateService = async (id, serviceData) => {
-  const services = await readServices()
-  const serviceIndex = services.findIndex(service => service.id === Number(id))
-
-  if (serviceIndex === -1) return null
-
-  const { name, description, duration, price, category, available } = serviceData
-
-  if (!name || !description || !duration || !price || !category || available === undefined) {
-    return null
-  }
-
-  const updatedService = {
-    ...services[serviceIndex],
-    name,
-    description,
-    duration,
-    price,
-    category,
-    available,
-    id: services[serviceIndex].id
-  }
-
-  services[serviceIndex] = updatedService
-  await writeServices(services)
-
-  return updatedService
-}
-
-export const deleteService = async (id) => {
-  const services = await readServices()
-  const serviceIndex = services.findIndex(service => service.id === Number(id))
-
-  if (serviceIndex === -1) return null
-
-  const [deletedService] = services.splice(serviceIndex, 1)
-  await writeServices(services)
-
-  return deletedService
-}
+export const serviceManager = new ServiceManager('./src/data/services.json')
