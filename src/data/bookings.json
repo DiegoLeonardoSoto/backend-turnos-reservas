@@ -27,7 +27,11 @@
     "services": [
       {
         "service": 3,
-        "quantity": 1
+        "quantity": 2
+      },
+      {
+        "service": 1,
+        "quantity": 2
       }
     ]
   },

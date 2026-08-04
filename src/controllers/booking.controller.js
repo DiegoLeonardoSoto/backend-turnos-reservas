@@ -59,8 +59,38 @@ export const addService = async (req, res) => {
 
     const { bid, sid } = req.params
 
-    const service = await serviceManager.getServiceById(sid)
+    try {
 
-    console.log(service)
+        const booking = await bookingManager.getBookingById(bid)
+
+        if (!booking) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Booking doesn\'t exist'
+            })
+        }
+
+        const service = await serviceManager.getServiceById(sid)
+
+        if (!service) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Service doesn\'t exist'
+            })
+        }
+
+        const updatedBooking = await bookingManager.addServiceToBooking(bid, sid)
+
+        res.status(201).json({
+            status: 'success',
+            payload: updatedBooking
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Error al agregar servicio'
+        })
+    }
 
 }
