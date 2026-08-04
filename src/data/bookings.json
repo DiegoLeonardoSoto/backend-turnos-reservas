@@ -110,6 +110,11 @@
     "date": "2025-08-10",
     "time": "10:00",
     "status": "confirmed",
-    "services": []
+    "services": [
+      {
+        "service": 1,
+        "quantity": 2
+      }
+    ]
   }
 ]

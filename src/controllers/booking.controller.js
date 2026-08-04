@@ -1,9 +1,9 @@
 import { bookingManager } from '../managers/BookingManager.js'
 import { serviceManager } from '../managers/ServiceManager.js'
 
-export const createBooking = async (req, res) => {
+export const addBooking = async (req, res) => {
     try {
-        const newBooking = await bookingManager.addBooking(req.body)
+        const newBooking = await bookingManager.createBooking(req.body)
         if (!newBooking) {
             return res.status(400).json({
                 status: 'error',

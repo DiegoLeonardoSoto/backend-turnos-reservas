@@ -21,7 +21,7 @@ export class BookingManager {
   }
 
 
-  async addBooking(bookingData) {
+  async createBooking(bookingData) {
     const { clientName, clientEmail, date, time, status, services } = bookingData
 
 
