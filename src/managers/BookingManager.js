@@ -21,29 +21,28 @@ export class BookingManager {
   }
 
 
-  async createBooking(bookingData) {
-  const { clientName, clientEmail, date, time, status, services } = bookingData
+  async addBooking(bookingData) {
+    const { clientName, clientEmail, date, time, status, services } = bookingData
 
-  if (!services) services = []
 
-  if (!clientName || !clientEmail || !date || !time || !status) {
-          return null
-      }
+    if (!clientName || !clientEmail || !date || !time || !status) {
+      return null
+    }
 
-      const bookings = await this.#readBookings()
+    const bookings = await this.#readBookings()
 
-      const newBookings = {
-          id: generateId(bookings),
-          clientName,
-          clientEmail,
-          date,
-          time,
-          status,
-          services
-      }
+    const newBookings = {
+      id: generateId(bookings),
+      clientName,
+      clientEmail,
+      date,
+      time,
+      status,
+      services: services ?? [],
+    }
 
-      await this.#writeBookings([...bookings, newBookings])
-      return newBookings
+    await this.#writeBookings([...bookings, newBookings])
+    return newBookings
   }
 
   async getBookingById(id) {
@@ -67,7 +66,6 @@ export class BookingManager {
       await this.#writeBookings(bookings)
       return booking
   }
-
-
-
 }
+
+export const bookingManager = new BookingManager('./src/data/bookings.json')

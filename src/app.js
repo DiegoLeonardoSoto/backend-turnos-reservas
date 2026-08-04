@@ -1,6 +1,6 @@
 import express from 'express'
 import servicesRouter from './routes/services.router.js'
-
+import bookingsRouter from './routes/bookings.router.js'
 
 export const app = express()
 
@@ -20,3 +20,4 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/services', servicesRouter)
+app.use('/api/bookings', bookingsRouter)
