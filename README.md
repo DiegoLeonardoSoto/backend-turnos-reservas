@@ -1,6 +1,6 @@
 # Backend Turnos y Reservas
 
-API REST para la gestión de servicios de un sistema de turnos y reservas, desarrollada con Node.js, Express y ESM.
+API REST para la gestión de servicios y reservas de un sistema de turnos, desarrollada con Node.js, Express y ESM.
 
 ## Instalación
 
@@ -30,6 +30,8 @@ Crear un archivo `.env` en la raíz del proyecto con las siguientes variables:
 | `NODE_ENV` | Entorno de ejecución | `development` |
 
 Hay un archivo `.env.example` como referencia.
+
+---
 
 ## Recurso `services`
 
@@ -71,8 +73,6 @@ Cada servicio representa un tratamiento o prestación disponible para reservar.
 | `DELETE` | `/api/services/:id` | Eliminar un servicio |
 
 ### Ejemplos de uso
-
-Probar los endpoints con Postman o cualquier cliente HTTP.
 
 #### Obtener todos los servicios
 
@@ -143,8 +143,6 @@ Response 200:
 Si el ID no existe:
 
 ```
-GET /api/services/99
-
 Response 404:
 {
   "status": "error",
@@ -255,5 +253,190 @@ Response 404:
 {
   "status": "error",
   "message": "Service not found"
+}
+```
+
+---
+
+## Recurso `bookings`
+
+Cada reserva representa un turno asignado a un cliente, compuesto por uno o más servicios.
+
+### Estructura
+
+```json
+{
+  "id": 1,
+  "clientName": "María González",
+  "clientEmail": "maria.gonzalez@email.com",
+  "date": "2025-08-10",
+  "time": "10:00",
+  "status": "confirmed",
+  "services": [
+    { "service": 1, "quantity": 1 },
+    { "service": 2, "quantity": 1 }
+  ]
+}
+```
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | `number` | Identificador único (autogenerado) |
+| `clientName` | `string` | Nombre del cliente |
+| `clientEmail` | `string` | Email del cliente |
+| `date` | `string` | Fecha de la reserva (formato `YYYY-MM-DD`) |
+| `time` | `string` | Hora de la reserva (formato `HH:mm`) |
+| `status` | `string` | Estado de la reserva: `pending`, `confirmed`, `cancelled`, `completed` |
+| `services` | `array` | Lista de servicios reservados. Cada item tiene `service` (ID del servicio) y `quantity` (cantidad). Si se agrega el mismo servicio dos veces, se incrementa `quantity`. |
+
+### Endpoints
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `POST` | `/api/bookings` | Crear una nueva reserva |
+| `GET` | `/api/bookings/:id` | Obtener una reserva por ID |
+| `POST` | `/api/bookings/:id/services/:sid` | Agregar un servicio a una reserva existente |
+
+### Ejemplos de uso
+
+#### Crear una reserva
+
+```
+POST /api/bookings
+
+Body (JSON):
+{
+  "clientName": "Lucía Fernández",
+  "clientEmail": "lucia.fernandez@email.com",
+  "date": "2025-08-13",
+  "time": "11:00",
+  "status": "confirmed",
+  "services": [
+    { "service": 7, "quantity": 1 },
+    { "service": 1, "quantity": 1 }
+  ]
+}
+
+Response 201:
+{
+  "status": "success",
+  "payload": {
+    "id": 5,
+    "clientName": "Lucía Fernández",
+    "clientEmail": "lucia.fernandez@email.com",
+    "date": "2025-08-13",
+    "time": "11:00",
+    "status": "confirmed",
+    "services": [
+      { "service": 7, "quantity": 1 },
+      { "service": 1, "quantity": 1 }
+    ]
+  }
+}
+```
+
+Si faltan campos obligatorios (`clientName`, `clientEmail`, `date`, `time`, `status`):
+
+```
+Response 400:
+{
+  "status": "error",
+  "message": "Missing required fields: clientName, clientEmail, date, time, status"
+}
+```
+
+#### Obtener una reserva por ID
+
+```
+GET /api/bookings/1
+
+Response 200:
+{
+  "status": "success",
+  "payload": {
+    "id": 1,
+    "clientName": "María González",
+    "clientEmail": "maria.gonzalez@email.com",
+    "date": "2025-08-10",
+    "time": "10:00",
+    "status": "confirmed",
+    "services": [
+      { "service": 1, "quantity": 1 },
+      { "service": 2, "quantity": 1 }
+    ]
+  }
+}
+```
+
+Si el ID no existe:
+
+```
+Response 404:
+{
+  "status": "error",
+  "message": "Booking not found"
+}
+```
+
+#### Agregar un servicio a una reserva
+
+```
+POST /api/bookings/1/services/3
+
+Response 201:
+{
+  "status": "success",
+  "payload": {
+    "id": 1,
+    "clientName": "María González",
+    "clientEmail": "maria.gonzalez@email.com",
+    "date": "2025-08-10",
+    "time": "10:00",
+    "status": "confirmed",
+    "services": [
+      { "service": 1, "quantity": 1 },
+      { "service": 2, "quantity": 1 },
+      { "service": 3, "quantity": 1 }
+    ]
+  }
+}
+```
+
+Si se vuelve a agregar el mismo servicio, se incrementa `quantity`:
+
+```
+POST /api/bookings/1/services/3
+
+Response 201:
+{
+  "status": "success",
+  "payload": {
+    ...
+    "services": [
+      { "service": 1, "quantity": 1 },
+      { "service": 2, "quantity": 1 },
+      { "service": 3, "quantity": 2 }
+    ]
+  }
+}
+```
+
+Si la reserva no existe:
+
+```
+Response 404:
+{
+  "status": "error",
+  "message": "Booking doesn't exist"
+}
+```
+
+Si el servicio no existe:
+
+```
+Response 404:
+{
+  "status": "error",
+  "message": "Service doesn't exist"
 }
 ```

@@ -7,7 +7,7 @@ export const addBooking = async (req, res) => {
         if (!newBooking) {
             return res.status(400).json({
                 status: 'error',
-                message: 'Error al crear la reserva'
+                message: 'Missing required fields: clientName, clientEmail, date, time, status'
             })
         }
 
