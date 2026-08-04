@@ -2,17 +2,18 @@ import fs from 'node:fs/promises'
 import { generateId } from '../utils/generateId.js'
 
 export class ServiceManager {
+    #path
   constructor(path) {
-    this._path = path
+    this.#path = path
   }
 
   get path() {
-    return this._path
+    return this.#path
   }
 
   async _readServices() {
     try {
-      const data = await fs.readFile(this._path, 'utf-8')
+      const data = await fs.readFile(this.#path, 'utf-8')
       return JSON.parse(data)
     } catch {
       return []
@@ -20,7 +21,7 @@ export class ServiceManager {
   }
 
   async _writeServices(services) {
-    await fs.writeFile(this._path, JSON.stringify(services, null, 2))
+    await fs.writeFile(this.#path, JSON.stringify(services, null, 2))
   }
 
   async getServices() {
