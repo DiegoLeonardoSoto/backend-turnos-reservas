@@ -1,7 +1,7 @@
 import { bookingManager } from '../managers/BookingManager.js'
 import { serviceManager } from '../managers/ServiceManager.js'
 
-export const addBooking = async (req, res) => {
+export const createBooking = async (req, res) => {
     try {
         const newBooking = await bookingManager.createBooking(req.body)
         if (!newBooking) {
@@ -27,7 +27,7 @@ export const addBooking = async (req, res) => {
 
 }
 
-export const getBooking = async (req, res) => {
+export const getBookingById = async (req, res) => {
   const { bid } = req.params
 
     try {
@@ -55,7 +55,7 @@ export const getBooking = async (req, res) => {
 
 }
 
-export const addService = async (req, res) => {
+export const addServiceToBooking = async (req, res) => {
 
     const { bid, sid } = req.params
 

@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import { addService, addBooking, getBooking } from '../controllers/booking.controller.js'
+import { addServiceToBooking, createBooking, getBookingById } from '../controllers/bookings.controller.js'
 
 
 const router = Router()
 
-router.post('/', addBooking)
-router.get('/:bid', getBooking)
-router.post('/:bid/services/:sid', addService)
+router.post('/', createBooking)
+router.get('/:bid', getBookingById)
+router.post('/:bid/services/:sid', addServiceToBooking)
 
 export default router

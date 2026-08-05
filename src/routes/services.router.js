@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { getAllServices, getService, createService, editService, removeService } from "../controllers/services.controller.js";
+import { getServices, getServiceById, createService, updateService, deleteService } from "../controllers/services.controller.js";
 
 const router = Router()
 
-router.get('/',getAllServices)
-router.get('/:sid',getService)
+router.get('/',getServices)
+router.get('/:sid',getServiceById)
 router.post('/',createService)
-router.put('/:sid',editService)
-router.delete('/:sid',removeService)
+router.put('/:sid',updateService)
+router.delete('/:sid',deleteService)
 
 export default router

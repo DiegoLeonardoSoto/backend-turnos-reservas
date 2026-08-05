@@ -1,6 +1,6 @@
 import { serviceManager } from "../managers/ServiceManager.js"
 
-export const getAllServices = async (req, res) => {
+export const getServices = async (req, res) => {
   const { category, available } = req.query
 
   let availableFilter = undefined
@@ -36,7 +36,7 @@ export const getAllServices = async (req, res) => {
 
 }
 
-export const getService =  async (req, res) => {
+export const getServiceById =  async (req, res) => {
   const { sid } = req.params
 
   try {
@@ -87,7 +87,7 @@ export const createService = async (req, res) => {
   }
 }
 
-export const editService = async (req, res) => {
+export const updateService = async (req, res) => {
   const { sid } = req.params
   try {
   const updatedService = await serviceManager.updateService(sid, req.body)
@@ -111,7 +111,7 @@ export const editService = async (req, res) => {
   }
 }
 
-export const removeService = async (req, res) => {
+export const deleteService = async (req, res) => {
   const { sid } = req.params
 
   try {
