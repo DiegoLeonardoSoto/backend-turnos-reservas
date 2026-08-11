@@ -48,20 +48,9 @@ export class ServicesFsDao {
       const index = services.findIndex(s => s.id === Number(id))
       if (index === -1) return null
 
-        const { name, description, duration, price, category, available } = data
-
-      if (!name || !description || !duration || !price || !category || available === undefined) {
-        return null
-      }
-
       const updatedService = {
         ...services[index],
-        name,
-        description,
-        duration,
-        price,
-        category,
-        available,
+        ...data,
         id: services[index].id
       }
 

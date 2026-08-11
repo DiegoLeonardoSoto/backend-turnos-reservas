@@ -2,7 +2,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { BookingsFsDao } from '../dao/fileSystem/bookings.fs.dao.js'
-import { BookingsRepository } from '../repository/bookings.repository.js'
+import { BookingsRepository } from '../repositories/bookings.repository.js'
 import { BookingsService } from '../services/bookings.service.js'
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))

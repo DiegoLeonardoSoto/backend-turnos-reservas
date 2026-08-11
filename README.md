@@ -33,6 +33,37 @@ Hay un archivo `.env.example` como referencia.
 
 ---
 
+## Arquitectura en capas
+
+La API sigue una arquitectura en capas con separación estricta de responsabilidades:
+
+```
+router → controller → service → repository → DAO → archivo JSON
+```
+
+| Capa | Responsabilidad |
+|------|----------------|
+| **Router** | Define los endpoints y los conecta al controller correspondiente |
+| **Controller** | Lee la request (`req`), llama al service, y responde con `res`. No contiene lógica de negocio. |
+| **Service** | Contiene las reglas de negocio. No conoce `req` ni `res`, solo trabaja con datos. |
+| **Repository** | Ofrece métodos de acceso a datos (`getAll`, `getById`, `create`, `update`, `delete`) sin lógica de negocio. Actúa como interfaz entre el service y el DAO. |
+| **DAO (Data Access Object)** | Lee y escribe directamente en el archivo JSON. Sin lógica de negocio ni validaciones. |
+
+### ¿Por qué esta arquitectura?
+
+- **Separación de responsabilidades**: cada capa tiene un único propósito. Si cambia la fuente de datos (ej. pasar de JSON a MongoDB), solo se modifica el DAO.
+- **Testabilidad**: cada capa puede testearse de forma aislada mediante inyección de dependencias.
+- **Mantenibilidad**: las reglas de negocio están concentradas en los services, sin mezclarse con detalles de HTTP o persistencia.
+
+### Reglas
+
+- Los controllers son los únicos que acceden a `req` y `res`.
+- Los services no importan `express` ni acceden a archivos.
+- Los repositories no contienen reglas de negocio, solo delegan al DAO.
+- Los DAOs no validan ni transforman datos, solo leen y escriben.
+
+---
+
 ## Recurso `services`
 
 Cada servicio representa un tratamiento o prestación disponible para reservar.

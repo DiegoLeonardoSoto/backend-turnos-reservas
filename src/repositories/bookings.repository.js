@@ -12,7 +12,7 @@ export class BookingsRepository {
         return this.#dao.getById(id)
     }
 
-    async update(bid, sid) {
-        return this.#dao.update(bid, sid)
+    async update(booking) {
+        return this.#dao.update(booking)
     }
 }
