@@ -1,14 +1,5 @@
 [
   {
-    "id": 1,
-    "name": "Corte de Pelo",
-    "description": "Corte de pelo personalizado según el estilo del cliente.",
-    "duration": 45,
-    "price": 25,
-    "category": "Pelo",
-    "available": true
-  },
-  {
     "id": 2,
     "name": "Lavado y Peinado",
     "description": "Lavado profesional con peinado incluido.",
@@ -74,6 +65,15 @@
   {
     "id": 9,
     "name": "Masaje Descontracturante",
+    "description": "Masaje focalizado en zonas de tensión.",
+    "duration": 50,
+    "price": 45,
+    "category": "Bienestar",
+    "available": true
+  },
+  {
+    "id": 10,
+    "name": "Masaje",
     "description": "Masaje focalizado en zonas de tensión.",
     "duration": 50,
     "price": 45,

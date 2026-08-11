@@ -1,113 +1,86 @@
-import { serviceManager } from "../managers/ServiceManager.js"
+import { servicesService } from "../dependencies/index.js"
+
+function sendError(res, error, fallbackMessage) {
+    const statusCode = error.statusCode ?? 500
+    if(statusCode === 500) console.error(error)
+    return res.status(statusCode).json(
+        {
+          status: 'error',
+          message: statusCode === 500 ? fallbackMessage : error.message
+        }
+    )}
 
 export const getServices = async (req, res) => {
-  const { category, available } = req.query
-
-  let availableFilter = undefined
-
-  if( available !== undefined ) {
-    availableFilter = available === 'true'
-  }
 
   try {
-  const services = await serviceManager.getServices()
+  const services = await servicesService.getServices(req.query)
 
-  let filteredServices = services
-
-    if (category) {
-      filteredServices = filteredServices.filter(s => s.category === category)
-    }
-
-    if (availableFilter !== undefined) {
-      filteredServices = filteredServices.filter(s => s.available === availableFilter)
-    }
-
-  res.status(200).json({
+  return res.status(200).json({
     status: 'success',
-    payload: filteredServices
+    count: services.length,
+    payload: services
   })
 
   } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Error al obtener los servicios'
-    })
+    return sendError(res, error, 'Error al obtener los servicios')
   }
 
 }
 
 export const getServiceById =  async (req, res) => {
-  const { sid } = req.params
+  const sid = Number(req.params.sid)
 
   try {
-  const service = await serviceManager.getServiceById(sid)
+  const service = await servicesService.getServiceById(sid)
 
   if (!service) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'Service not found'
-    })
+    return sendError(res, { statusCode: 404, message: 'Service not found' }, 'Service not found')
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     status: 'success',
     payload: service
   })
 
   } catch (error) {
-   res.status(500).json({
-      status: 'error',
-      message: 'Error al obtener el servicio'
-    })
+    return sendError(res, error, 'Error al obtener el servicio')
   }
 }
 
 export const createService = async (req, res) => {
 
   try {
-  const newService = await serviceManager.addService(req.body)
+  const newService = await servicesService.createService(req.body)
 
   if (!newService) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'Missing required fields: name, description, duration, price, category, available'
-    })
+    return sendError(res, { statusCode: 400, message: 'Missing required fields: name, description, duration, price, category, available' }, 'Error al agregar el servicio')
   }
 
-  res.status(201).json({
+  return res.status(201).json({
     status: 'success',
     payload: newService
   })
 
   } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Error al agregar el servicio'
-    })
+    return sendError(res, error, 'Error al agregar el servicio')
   }
 }
 
 export const updateService = async (req, res) => {
   const { sid } = req.params
   try {
-  const updatedService = await serviceManager.updateService(sid, req.body)
+  const updatedService = await servicesService.updateService(sid, req.body)
 
   if (!updatedService) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'Service not found or no valid fields to update'
-    })
+    return sendError(res, { statusCode: 404, message: 'Service not found or no valid fields to update' }, 'Error al editar el servicio')
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     status: 'success',
     payload: updatedService
   })
   } catch (error) {
-   res.status(500).json({
-      status: 'error',
-      message: 'Error al editar el servicio'
-    })
+    return sendError(res, error, 'Error al editar el servicio')
   }
 }
 
@@ -115,24 +88,18 @@ export const deleteService = async (req, res) => {
   const { sid } = req.params
 
   try {
-    const deletedService = await serviceManager.deleteService(sid)
+    const deletedService = await servicesService.deleteService(sid)
 
   if (!deletedService) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'Service not found'
-    })
+    return sendError(res, { statusCode: 404, message: 'Service not found' }, 'Error al eliminar el servicio')
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     status: 'success',
     payload: deletedService
   })
 
   } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Error al eliminar el servicio'
-    })
+    return sendError(res, error, 'Error al eliminar el servicio')
   }
 }
