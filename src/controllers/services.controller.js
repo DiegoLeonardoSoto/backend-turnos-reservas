@@ -1,14 +1,6 @@
-import { servicesService } from "../dependencies/index.js"
+import { servicesService } from "../dependencies/services.dependency.js"
+import { sendError } from "../utils/sendError.js"
 
-function sendError(res, error, fallbackMessage) {
-    const statusCode = error.statusCode ?? 500
-    if(statusCode === 500) console.error(error)
-    return res.status(statusCode).json(
-        {
-          status: 'error',
-          message: statusCode === 500 ? fallbackMessage : error.message
-        }
-    )}
 
 export const getServices = async (req, res) => {
 

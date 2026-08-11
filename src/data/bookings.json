@@ -114,6 +114,10 @@
       {
         "service": 1,
         "quantity": 2
+      },
+      {
+        "service": 10,
+        "quantity": 2
       }
     ]
   }

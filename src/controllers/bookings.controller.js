@@ -1,28 +1,22 @@
-import { bookingManager } from '../managers/BookingManager.js'
-import { serviceManager } from '../managers/ServiceManager.js'
+
+import { servicesService } from "../dependencies/services.dependency.js"
+import { bookingsService } from "../dependencies/booking.dependency.js"
+import { sendError } from '../utils/sendError.js'
 
 export const createBooking = async (req, res) => {
     try {
-        const newBooking = await bookingManager.createBooking(req.body)
+        const newBooking = await bookingsService.createBooking(req.body)
         if (!newBooking) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Missing required fields: clientName, clientEmail, date, time, status'
-            })
+            return sendError(res, { statusCode: 400, message: 'Missing required fields: clientName, clientEmail, date, time, status' })
         }
 
-        res.status(201).json({
+        return res.status(201).json({
             status: 'success',
             payload: newBooking
         })
 
     } catch (error) {
-
-        res.status(500).json({
-            status: 'error',
-            message: 'Error al agregar reserva'
-        })
-
+       return sendError(res, error, 'Error al agregar reserva')
     }
 
 }
@@ -31,24 +25,18 @@ export const getBookingById = async (req, res) => {
   const { bid } = req.params
 
     try {
-        const booking = await bookingManager.getBookingById(bid)
+        const booking = await bookingsService.getBookingById(bid)
 
         if (!booking) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'Booking not found'
-            })
+            return sendError(res, { statusCode: 404, message: 'Booking not found' })
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             status: 'success',
             payload: booking
         })
     } catch (error) {
-        res.status(500).json({
-            status: 'error',
-            message: 'Error al obtener reserva'
-        })
+        return sendError(res, error, 'Error al obtener reserva')
   }
 
 
@@ -61,36 +49,27 @@ export const addServiceToBooking = async (req, res) => {
 
     try {
 
-        const booking = await bookingManager.getBookingById(bid)
+        const booking = await bookingsService.getBookingById( Number(bid) )
 
         if (!booking) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'Booking doesn\'t exist'
-            })
+            return sendError(res, { statusCode: 404, message: 'Booking doesn\'t exist' })
         }
 
-        const service = await serviceManager.getServiceById(sid)
+        const service = await servicesService.getServiceById( Number(sid) )
 
         if (!service) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'Service doesn\'t exist'
-            })
+            return sendError(res, { statusCode: 404, message: 'Service doesn\'t exist' })
         }
 
-        const updatedBooking = await bookingManager.addServiceToBooking(bid, sid)
+        const updatedBooking = await bookingsService.addServiceToBooking(Number(bid), Number(sid))
 
-        res.status(201).json({
+        return res.status(201).json({
             status: 'success',
             payload: updatedBooking
         })
 
     } catch (error) {
-        res.status(500).json({
-            status: 'error',
-            message: 'Error al agregar servicio'
-        })
+        return sendError(res, error, 'Error al agregar servicio')
     }
 
 }
