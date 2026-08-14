@@ -4,6 +4,10 @@ export class BookingsRepository {
         this.#dao = dao
     }
 
+    async getAll() {
+        return this.#dao.getAll()
+    }
+
     async create(data) {
         return this.#dao.create(data)
     }
@@ -12,7 +16,7 @@ export class BookingsRepository {
         return this.#dao.getById(id)
     }
 
-    async update(booking) {
-        return this.#dao.update(booking)
+    async update(id,data) {
+        return this.#dao.update(id,data)
     }
 }

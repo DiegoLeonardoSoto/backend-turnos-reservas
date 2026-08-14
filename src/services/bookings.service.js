@@ -5,6 +5,10 @@ export class BookingsService {
     }
 
 
+    async getAllBookings() {
+        return this.#repository.getAll()
+    }
+
     async createBooking(bookingData) {
         const { clientName, clientEmail, date, time, status, services } = bookingData
 
@@ -25,16 +29,19 @@ export class BookingsService {
 
          let booking = await this.#repository.getById(bid)
         if (!booking) return null
-
-        let service = booking.services.find( s => s.service === Number(sid) )
+        let service = booking.services.find(s => s.service.equals(sid))
 
         if (!service) {
-            const newService = { service: Number(sid), quantity: 1 }
-            booking.services.push(newService)
+            booking.services.push({
+                service: sid,
+                quantity: 1
+            })
         } else {
             service.quantity += 1
         }
 
-        return this.#repository.update(booking)
+        return this.#repository.update(bid, {
+            services: booking.services
+        })
     }
 }

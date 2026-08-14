@@ -1,4 +1,4 @@
-import serviceModel from '../../models/service.model.js'
+import { serviceModel } from '../../models/service.model.js'
 
 export default class ServicesMongoDAO {
     async getAll() {

@@ -1,9 +1,10 @@
 import { Router } from 'express'
-import { addServiceToBooking, createBooking, getBookingById } from '../controllers/bookings.controller.js'
+import { addServiceToBooking, createBooking, getAllBookings, getBookingById } from '../controllers/bookings.controller.js'
 
 
 const router = Router()
 
+router.get('/', getAllBookings)
 router.post('/', createBooking)
 router.get('/:bid', getBookingById)
 router.post('/:bid/services/:sid', addServiceToBooking)
