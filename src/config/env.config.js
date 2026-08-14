@@ -12,9 +12,12 @@ if(!process.env.NODE_ENV) {
   process.exit(1);
 }
 
+
+
 const config = {
   port: Number(process.env.PORT),
   nodeEnv: process.env.NODE_ENV,
+  mongoUri: process.env.MONGO_URI,
 }
 
 export default config;
