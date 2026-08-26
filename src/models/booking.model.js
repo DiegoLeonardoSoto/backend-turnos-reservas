@@ -1,5 +1,22 @@
 import mongoose from 'mongoose'
 
+const serviceItemSchema = new mongoose.Schema(
+    {
+        service: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Service',
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            min: 1
+        }
+    }, {
+        _id:false
+    }
+)
+
 const bookingsSchema = new mongoose.Schema(
     {
       clientName: {
@@ -23,21 +40,7 @@ const bookingsSchema = new mongoose.Schema(
         type: String,
         required: true
       },
-      services: [
-        {
-            service: {
-            _id: false,
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Service',
-            required: true
-          },
-          quantity: {
-            type: Number,
-            required: true,
-            min: 1
-          }
-        }
-      ]
+      services: [serviceItemSchema]
     },
     {
         timestamps: true,
