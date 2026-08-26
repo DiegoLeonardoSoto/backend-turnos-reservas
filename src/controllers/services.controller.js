@@ -20,7 +20,7 @@ export const getServices = async (req, res) => {
 }
 
 export const getServiceById =  async (req, res) => {
-  const sid = Number(req.params.sid)
+  const sid = req.params.sid
 
   try {
   const service = await servicesService.getServiceById(sid)
