@@ -1,6 +1,6 @@
 # Backend Turnos y Reservas
 
-API REST para la gestión de servicios y reservas de un sistema de turnos, desarrollada con Node.js, Express, MongoDB y Mongoose (ESM).
+API REST con vistas server-side (Handlebars) y tiempo real (Socket.io) para la gestión de servicios y reservas de un sistema de turnos, desarrollada con Node.js, Express, MongoDB y Mongoose (ESM).
 
 ## Instalación
 
@@ -64,6 +64,36 @@ router → controller → service → repository → DAO → MongoDB (Atlas)
 - Los services no importan `express` ni acceden a la base de datos directamente.
 - Los repositories no contienen reglas de negocio, solo delegan al DAO.
 - Los DAOs no validan ni transforman datos, solo leen y escriben.
+
+---
+
+## Vistas con Handlebars
+
+Además de la API REST, el servidor renderiza vistas server-side con Handlebars.
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/views/services` | Listado de servicios |
+| `GET` | `/views/services/:sid` | Detalle de un servicio |
+| `GET` | `/views/bookings` | Listado de reservas |
+| `GET` | `/views/bookings/:bid` | Detalle de una reserva |
+
+Las vistas viven en `src/views/` (layout en `layouts/main.handlebars`) y usan las mismas capas que la API: `views.controller → service → repository → DAO → model`.
+
+---
+
+## Tiempo real con Socket.io
+
+El botón "Cambiar disponibilidad" en el detalle de un servicio actualiza su disponibilidad en tiempo real, sin recargar la página.
+
+Flujo:
+
+1. El cliente emite `toggle-available` con el `id` del servicio.
+2. El servidor flipea `available` de forma atómica (pipeline `$not` en MongoDB).
+3. El servidor emite `available-changed` con el servicio actualizado a todos los clientes.
+4. Cada cliente actualiza el DOM con el nuevo valor.
+
+Archivos: `public/js/socket.js` (cliente) y la configuración en `src/app.js`.
 
 ---
 
