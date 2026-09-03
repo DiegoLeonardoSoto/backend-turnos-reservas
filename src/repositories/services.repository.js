@@ -23,4 +23,8 @@ export class ServicesRepository {
     delete(id) {
         return this.#dao.delete(id)
     }
+
+    toggleAvailability(id) {
+        return this.#dao.toggleAvailability(id)
+    }
 }

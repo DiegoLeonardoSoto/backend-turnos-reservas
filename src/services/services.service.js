@@ -44,4 +44,8 @@ export class ServicesService {
         return this.#repository.delete(id)
     }
 
+    async toggleAvailability(id) {
+        return this.#repository.toggleAvailability(id)
+    }
+
 }

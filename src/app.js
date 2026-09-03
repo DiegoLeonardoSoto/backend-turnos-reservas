@@ -1,10 +1,25 @@
 import express from 'express'
 import servicesRouter from './routes/services.router.js'
 import bookingsRouter from './routes/bookings.router.js'
+import viewsRouter from './routes/views.router.js';
+import { engine } from 'express-handlebars';
+import { createServer } from 'node:http'
+import { Server } from 'socket.io'
+import { servicesService } from './dependencies/services.dependency.js';
 
-export const app = express()
+const app = express()
+export const server = createServer(app)
+const io = new Server(server);
+
+
+
 
 app.use(express.json())
+app.use(express.static('public'))
+
+app.engine('handlebars', engine());
+app.set('view engine', 'handlebars');
+app.set('views', './src/views');
 
 // Logger middleware
 app.use((req, res, next) => {
@@ -19,5 +34,22 @@ app.get('/', (req, res) => {
   })
 })
 
+//routes
 app.use('/api/services', servicesRouter)
 app.use('/api/bookings', bookingsRouter)
+app.use('/views', viewsRouter);
+
+//websockets
+io.on('connection', (socket) => {
+
+    socket.on('disconnect', () => {
+        console.log('Cliente desconectado');
+    });
+
+    socket.on('toggle-available', async(id) => {
+        const updatedService = await servicesService.toggleAvailability(id)
+        if(!updatedService) return
+        io.emit('available-changed', updatedService)
+    });
+
+});
