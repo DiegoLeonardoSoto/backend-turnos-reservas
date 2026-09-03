@@ -3,7 +3,7 @@ import { bookingModel } from "../../models/booking.model.js";
 export class BookingsMongoDAO {
 
     async getAll() {
-        return bookingModel.find()
+        return bookingModel.find().lean()
     }
 
     async create(data) {
@@ -11,7 +11,7 @@ export class BookingsMongoDAO {
     }
 
     async getById(id) {
-      return bookingModel.findById(id)
+      return bookingModel.findById(id).lean()
     }
 
     async update(id,data) {

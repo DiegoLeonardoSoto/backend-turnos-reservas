@@ -1,0 +1,12 @@
+<h1>Detalle del Servicio</h1>
+
+<div class="card" id="{{service._id}}">
+  <h2>{{service.name}}</h2>
+  <p>{{service.description}}</p>
+  <p><strong>Duración:</strong> {{service.duration}} minutos</p>
+  <p><strong>Precio:</strong> ${{service.price}}</p>
+  <p><strong>Categoría:</strong> {{service.category}}</p>
+  <p class='available'><strong>Disponible:</strong> {{#if service.available}}Sí{{else}}No{{/if}}</p>
+  <button class="btn btn-toggle" id="btn-toggle">Cambiar disponibilidad</button>
+  <a href="/views/services" class="btn">← Volver a servicios</a>
+</div>

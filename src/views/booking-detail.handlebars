@@ -1,0 +1,18 @@
+<h1>Detalle de Reserva</h1>
+
+<div class="card" id="booking-{{booking._id}}">
+  <h2>Reserva de {{booking.clientName}}</h2>
+  <p><strong>Email:</strong> {{booking.clientEmail}}</p>
+  <p><strong>Fecha:</strong> {{booking.date}}</p>
+  <p><strong>Hora:</strong> {{booking.time}}</p>
+  <p><strong>Estado:</strong> <span class="status status-{{booking.status}}">{{booking.status}}</span></p>
+
+  <h3>Servicios</h3>
+  <ul id="booking-{{booking._id}}-services">
+    {{#each booking.services}}
+      <li>Servicio: {{this.service}} — Cantidad: {{this.quantity}}</li>
+    {{/each}}
+  </ul>
+
+  <a href="/views/bookings" class="btn">← Volver a reservas</a>
+</div>

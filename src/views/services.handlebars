@@ -1,0 +1,18 @@
+<h1>Servicios disponibles</h1>
+
+{{#if services.length}}
+  {{#each services}}
+    <div class="card" id="{{_id}}">
+      <hr>
+      <h2>{{name}}</h2>
+      <p>{{description}}</p>
+      <p><strong>Duración:</strong> {{duration}} minutos</p>
+      <p><strong>Precio:</strong> ${{price}}</p>
+      <p><strong>Categoría:</strong> {{category}}</p>
+      <p class='available'><strong>Disponible:</strong> {{#if available}}Sí{{else}}No{{/if}}</p>
+      <a href="/views/services/{{_id}}" class="btn">Ver detalle</a>
+    </div>
+  {{/each}}
+{{else}}
+  <p class="empty-message">No hay servicios disponibles.</p>
+{{/if}}
