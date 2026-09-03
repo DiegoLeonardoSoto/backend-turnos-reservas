@@ -63,7 +63,7 @@ router → controller → service → repository → DAO → MongoDB (Atlas)
 - Los controllers son los únicos que acceden a `req` y `res`.
 - Los services no importan `express` ni acceden a la base de datos directamente.
 - Los repositories no contienen reglas de negocio, solo delegan al DAO.
-- Los DAOs no validan ni transforman datos, solo leen y escriben.
+- Los DAOs no contienen lógica de negocio ni validaciones — solo operaciones de persistencia, incluidas las primitivas atómicas ($inc, $not, $push).
 
 ---
 
