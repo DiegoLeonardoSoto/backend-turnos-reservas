@@ -11,7 +11,7 @@ export class BookingsMongoDAO {
     }
 
     async getById(id) {
-      return bookingModel.findById(id).lean()
+      return bookingModel.findById(id).populate("services.service").lean()
     }
 
     async update(id,data) {
