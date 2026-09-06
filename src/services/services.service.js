@@ -4,17 +4,8 @@ export class ServicesService {
       this.#repository = repository
     }
 
-    async getServices({ category, available } = {}) {
-        let services = await this.#repository.getAll()
-
-        if (category) {
-          services = services.filter(s => s.category.toLowerCase() === category.toLowerCase())
-        }
-
-        if (available !== undefined) {
-          const availableBoolean = available === 'true'
-          services = services.filter(s => s.available === availableBoolean)
-        }
+    async getServices(filters = {}) {
+        let services = await this.#repository.getAll(filters)
 
         return services
     }

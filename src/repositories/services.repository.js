@@ -4,8 +4,8 @@ export class ServicesRepository {
         this.#dao = dao
     }
 
-    getAll() {
-        return this.#dao.getAll()
+    getAll(filters) {
+        return this.#dao.getAll(filters)
     }
 
     create(data) {

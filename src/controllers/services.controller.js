@@ -4,13 +4,25 @@ import { sendError } from "../utils/sendError.js"
 
 export const getServices = async (req, res) => {
 
+    const filters = {
+      available: req.query.available !== undefined ? req.query.available === 'true' : undefined,
+      category: req.query.category,
+      maxPrice: req.query.maxPrice,
+      limit: req.query.limit || 10,
+      page: req.query.page || 1,
+    }
+
   try {
-  const services = await servicesService.getServices(req.query)
+  const services = await servicesService.getServices(filters)
 
   return res.status(200).json({
     status: 'success',
-    count: services.length,
-    payload: services
+    items: services.docs,
+    total: services.totalDocs,
+    page: services.page,
+    pageSize: services.limit,
+    totalPages: services.totalPages,
+    hasNext: services.hasNextPage,
   })
 
   } catch (error) {

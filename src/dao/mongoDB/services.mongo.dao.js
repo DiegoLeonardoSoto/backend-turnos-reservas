@@ -1,8 +1,12 @@
 import { serviceModel } from '../../models/service.model.js'
 
 export default class ServicesMongoDAO {
-    async getAll() {
-        return serviceModel.find().lean()
+    async getAll(filters) {
+        return serviceModel.paginate({
+            ...(filters.category && {category: filters.category}),
+            ...(filters.maxPrice && {price: {$lte: Number(filters.maxPrice)}}),
+            ...(filters.available !== undefined && {available: filters.available})
+        },{limit:filters.limit, page:filters.page, lean:true})
     }
 
     async getById(id) {
