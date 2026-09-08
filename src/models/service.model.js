@@ -24,12 +24,33 @@ const serviceSchema = new mongoose.Schema(
     category: {
         type: String,
         required: true,
-        lowercase: true
+        lowercase: false,
+        enum: [
+          'musculacion',
+          'cardio',
+          'funcional',
+          'crossfit',
+          'yoga',
+          'pilates',
+          'spinning',
+          'entrenamiento_personal',
+          'clases_grupales',
+          'otros'
+        ]
     },
     available: {
         type: Boolean,
-        required: true
-    }
+        required: true,
+        },
+    capacity: {
+        type: Number,
+        required: true,
+        min: 1
+    },
+    reserved: {
+        type: Number,
+        default: 0
+    },
     },
     {
         timestamps: true,
