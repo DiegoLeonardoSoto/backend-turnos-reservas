@@ -56,10 +56,6 @@ export const createService = async (req, res) => {
   try {
   const newService = await servicesService.createService(req.body)
 
-  if (!newService) {
-    return sendError(res, { statusCode: 400, message: 'Missing required fields: name, description, duration, price, category, available' }, 'Error al agregar el servicio')
-  }
-
   return res.status(201).json({
     status: 'success',
     payload: newService
@@ -74,10 +70,6 @@ export const updateService = async (req, res) => {
   const { sid } = req.params
   try {
   const updatedService = await servicesService.updateService(sid, req.body)
-
-  if (!updatedService) {
-    return sendError(res, { statusCode: 404, message: 'Service not found or no valid fields to update' }, 'Error al editar el servicio')
-  }
 
   return res.status(200).json({
     status: 'success',

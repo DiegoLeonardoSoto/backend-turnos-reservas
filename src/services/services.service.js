@@ -17,13 +17,6 @@ export class ServicesService {
     }
 
     async createService(serviceData) {
-
-        const { name, description, duration, price, category, available } = serviceData
-
-        if (!name || !description || !duration || !price || !category || available === undefined) {
-          return null
-        }
-
         return this.#repository.create(serviceData)
     }
 
