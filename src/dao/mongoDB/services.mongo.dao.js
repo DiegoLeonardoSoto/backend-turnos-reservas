@@ -3,10 +3,20 @@ import { serviceModel } from '../../models/service.model.js'
 export default class ServicesMongoDAO {
     async getAll(filters) {
         return serviceModel.paginate({
-            ...(filters.category && {category: filters.category}),
-            ...(filters.maxPrice && {price: {$lte: Number(filters.maxPrice)}}),
-            ...(filters.available !== undefined && {available: filters.available})
-        },{limit:filters.limit, page:filters.page, lean:true})
+            ...(filters.category && { category: filters.category }),
+            ...(filters.available !== undefined && { available: filters.available }),
+            ...((filters.minPrice || filters.maxPrice) && {
+                price: {
+                    ...(filters.minPrice && { $gte: filters.minPrice }),
+                    ...(filters.maxPrice && { $lte: filters.maxPrice }),
+                }
+            }),
+        }, {
+            limit: filters.limit,
+            page: filters.page,
+            lean: true,
+            sort: filters.sortBy ? {[filters.sortBy]: filters.order === 'desc' ? -1: 1} : undefined
+        })
     }
 
     async getById(id) {

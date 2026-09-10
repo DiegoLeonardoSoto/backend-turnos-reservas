@@ -30,3 +30,17 @@ export const updateServiceSchema = createServiceSchema
     .partial()
     .strict()
     .refine( (data)=> Object.keys(data).length > 0, "Debe enviar al menos un campo para actualizar" )
+
+export const getServiceQuerySchema = z.object({
+    category: z.string().optional(),
+    available: z.enum(["true", "false"]).transform(v => v === "true").optional(),
+    maxPrice: z.coerce.number().min(1).optional(),
+    minPrice: z.coerce.number().min(0).optional(),
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).default(10),
+    sortBy: z.string().optional(),
+    order: z.enum(["asc","desc"]).optional()
+}).refine(
+    (data) => data.minPrice === undefined || data.maxPrice === undefined || data.minPrice < data.maxPrice,
+    "minPrice debe ser menor que maxPrice"
+)

@@ -5,11 +5,14 @@ import { sendError } from "../utils/sendError.js"
 export const getServices = async (req, res) => {
 
     const filters = {
-      available: req.query.available !== undefined ? req.query.available === 'true' : undefined,
+      available: req.query.available,
       category: req.query.category,
       maxPrice: req.query.maxPrice,
-      limit: req.query.limit || 10,
-      page: req.query.page || 1,
+      minPrice: req.query.minPrice,
+      limit: req.query.limit,
+      page: req.query.page,
+      sortBy: req.query.sortBy,
+      order: req.query.order,
     }
 
   try {
@@ -22,7 +25,8 @@ export const getServices = async (req, res) => {
     page: services.page,
     pageSize: services.limit,
     totalPages: services.totalPages,
-    hasNext: services.hasNextPage,
+    hasNextPage: services.hasNextPage,
+    hasPrevPage: services.hasPrevPage,
   })
 
   } catch (error) {

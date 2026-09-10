@@ -41,7 +41,12 @@ export function validateQuery(schema) {
                 message: parsed.error.issues.map((i)=> i.message).join(", ")
             })
         }
-        req.query = parsed.data
+        Object.defineProperty(req, 'query', {
+            value: parsed.data,
+            writable: true,
+            configurable: true,
+            enumerable: true,
+        })
         next()
     }
 
