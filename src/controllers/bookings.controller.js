@@ -16,11 +16,9 @@ export const getAllBookings = async (_, res) => {
 }
 
 export const createBooking = async (req, res) => {
-    try {
+
+  try {
         const newBooking = await bookingsService.createBooking(req.body)
-        if (!newBooking) {
-            return sendError(res, { statusCode: 400, message: 'Missing required fields: clientName, clientEmail, date, time, status' })
-        }
 
         return res.status(201).json({
             status: 'success',
@@ -29,7 +27,7 @@ export const createBooking = async (req, res) => {
 
     } catch (error) {
        return sendError(res, error, 'Error al agregar reserva')
-    }
+  }
 
 }
 

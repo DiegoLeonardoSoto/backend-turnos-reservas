@@ -32,4 +32,8 @@ export class ServicesService {
         return this.#repository.toggleAvailability(id)
     }
 
+    async reserveService(id, quantity) {
+        return this.#repository.reserveService(id, quantity)
+    }
+
 }

@@ -1,7 +1,9 @@
 export class BookingsService {
     #repository
-    constructor(repository) {
+    #servicesService
+    constructor(repository, servicesService) {
         this.#repository = repository
+        this.#servicesService = servicesService
     }
 
 
@@ -9,14 +11,17 @@ export class BookingsService {
         return this.#repository.getAll()
     }
 
-    async createBooking(bookingData) {
-        const { clientName, clientEmail, date, time, status, services } = bookingData
+    async createBooking({ clientName, clientEmail, date, time, status, service }) {
 
-        if (!clientName || !clientEmail || !date || !time || !status) {
-          return null
-        }
+        const serviceData = await this.#servicesService.getServiceById(service.sid)
 
-        return this.#repository.create({...bookingData, services: services || []})
+        if ( !serviceData ) throw {statusCode: 404, message: 'Service not found'}
+
+        const isReserved = await this.#servicesService.reserveService(service.sid, service.quantity)
+
+        if (!isReserved) throw {statusCode: 409, message: 'Service not available'}
+
+        return this.#repository.create({ clientName, clientEmail, date, time, status, services:[ {service: service.sid, quantity: service.quantity} ] })
     }
 
     async getBookingById(id) {

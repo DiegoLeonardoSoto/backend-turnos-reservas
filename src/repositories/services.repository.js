@@ -27,4 +27,8 @@ export class ServicesRepository {
     toggleAvailability(id) {
         return this.#dao.toggleAvailability(id)
     }
+
+    reserveService(id, quantity) {
+        return this.#dao.reserveService(id, quantity)
+    }
 }

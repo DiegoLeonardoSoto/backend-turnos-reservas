@@ -33,5 +33,19 @@ export default class ServicesMongoDAO {
       )
     }
 
+    async reserveService(id, quantity) {
+      return serviceModel.findOneAndUpdate(
+          {
+              _id: id,
+              available: true,
+              $expr: {
+                  $lte:[ {$add:["$reserved", quantity]}, "$capacity" ]
+              }
+          },
+          { $inc: { reserved: quantity } },
+          { returnDocument: 'after'}
+      )
+    }
+
 
 }
