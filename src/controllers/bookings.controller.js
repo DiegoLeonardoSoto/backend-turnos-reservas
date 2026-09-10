@@ -1,5 +1,4 @@
 
-import { servicesService } from "../dependencies/services.dependency.js"
 import { bookingsService } from "../dependencies/booking.dependency.js"
 import { sendError } from '../utils/sendError.js'
 
@@ -37,46 +36,30 @@ export const getBookingById = async (req, res) => {
     try {
         const booking = await bookingsService.getBookingById(bid)
 
-        if (!booking) {
-            return sendError(res, { statusCode: 404, message: 'Booking not found' })
-        }
+          if (!booking) {
+              return sendError(res, { statusCode: 404, message: 'Booking not found' })
+          }
 
-        return res.status(200).json({
-            status: 'success',
-            payload: booking
-        })
-    } catch (error) {
-        return sendError(res, error, 'Error al obtener reserva')
+          return res.status(200).json({
+              status: 'success',
+              payload: booking
+          })
+      } catch (error) {
+          return sendError(res, error, 'Error al obtener reserva')
+    }
   }
 
+  export const addServiceToBooking = async (req, res) => {
 
+      const { bid, sid } = req.params
+      const { quantity } = req.body
 
-}
-
-export const addServiceToBooking = async (req, res) => {
-
-    const { bid, sid } = req.params
-
-    try {
-
-        const booking = await bookingsService.getBookingById(bid )
-
-        if (!booking) {
-            return sendError(res, { statusCode: 404, message: 'Booking doesn\'t exist' })
-        }
-
-        const service = await servicesService.getServiceById(sid)
-
-        if (!service) {
-            return sendError(res, { statusCode: 404, message: 'Service doesn\'t exist' })
-        }
-
-        const updatedBooking = await bookingsService.addServiceToBooking(bid, sid)
-
-        return res.status(201).json({
-            status: 'success',
-            payload: updatedBooking
-        })
+      try {
+        const updatedBooking = await bookingsService.addServiceToBooking(bid, sid, quantity)
+          return res.status(201).json({
+              status: 'success',
+              payload: updatedBooking
+          })
 
     } catch (error) {
         return sendError(res, error, 'Error al agregar servicio')

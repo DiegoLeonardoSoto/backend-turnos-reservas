@@ -19,4 +19,8 @@ export class BookingsRepository {
     async update(id,data) {
         return this.#dao.update(id,data)
     }
+
+    async addService(id, service) {
+        return this.#dao.addService(id, service)
+    }
 }

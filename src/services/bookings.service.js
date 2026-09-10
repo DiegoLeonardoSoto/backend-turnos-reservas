@@ -30,23 +30,17 @@ export class BookingsService {
         return booking
     }
 
-    async addServiceToBooking(bid, sid) {
+    async addServiceToBooking(bid, sid, quantity = 1) {
 
-         let booking = await this.#repository.getById(bid)
-        if (!booking) return null
-        let service = booking.services.find(s => s.service.equals(sid))
+        const bookingData = await this.#repository.getById(bid)
+        if (!bookingData) return null
 
-        if (!service) {
-            booking.services.push({
-                service: sid,
-                quantity: 1
-            })
-        } else {
-            service.quantity += 1
-        }
+        const serviceData = await this.#servicesService.getServiceById(sid)
+        if (!serviceData) return null
 
-        return this.#repository.update(bid, {
-            services: booking.services
-        })
+        const isReserved = await this.#servicesService.reserveService(sid, quantity)
+        if (!isReserved) throw {statusCode: 409, message: 'Service not available'}
+
+        return this.#repository.addService(bid, { sid, quantity })
     }
 }
