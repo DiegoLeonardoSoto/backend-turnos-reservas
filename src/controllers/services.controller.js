@@ -75,6 +75,10 @@ export const updateService = async (req, res) => {
   try {
   const updatedService = await servicesService.updateService(sid, req.body)
 
+  if (!updatedService) {
+    return sendError(res, { statusCode: 404, message: 'Service not found' })
+  }
+
   return res.status(200).json({
     status: 'success',
     payload: updatedService

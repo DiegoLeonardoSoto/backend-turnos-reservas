@@ -74,7 +74,12 @@ export const addServiceToBooking = async (req, res) => {
       const { quantity } = req.body
 
       try {
-        const updatedBooking = await bookingsService.addServiceToBooking(bid, sid, quantity)
+          const updatedBooking = await bookingsService.addServiceToBooking(bid, sid, quantity)
+
+          if (!updatedBooking) {
+              return sendError(res, { statusCode: 404, message: 'Booking or Service not found' })
+          }
+
           return res.status(201).json({
               status: 'success',
               payload: updatedBooking
