@@ -1,9 +1,12 @@
 export function sendError(res, error, fallbackMessage) {
     const statusCode = error.statusCode ?? 500
-    if(statusCode === 500) console.error(error)
-    return res.status(statusCode).json(
-        {
-          status: 'error',
-          message: statusCode === 500 ? fallbackMessage : error.message
-        }
-    )}
+    const message = statusCode === 500 ? fallbackMessage : error.message
+    if (statusCode === 500) console.error(error)
+
+    if (res.headersSent) return
+
+    if (res.req?.accepts('html')) {
+        return res.status(statusCode).render('error', { statusCode, message })
+    }
+    return res.status(statusCode).json({ status: 'error', message })
+}

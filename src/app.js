@@ -6,6 +6,8 @@ import { engine } from 'express-handlebars';
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import { servicesService } from './dependencies/services.dependency.js';
+import { notFound } from './middlewares/notFound.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express()
 export const server = createServer(app)
@@ -38,6 +40,9 @@ app.get('/', (req, res) => {
 app.use('/api/services', servicesRouter)
 app.use('/api/bookings', bookingsRouter)
 app.use('/views', viewsRouter);
+
+app.use(notFound);
+app.use(errorHandler);
 
 //websockets
 io.on('connection', (socket) => {
