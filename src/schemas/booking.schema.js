@@ -20,3 +20,9 @@ export const createBookingSchema = z.object({
         quantity: z.coerce.number().int().min(1).default(1)
     })
 }).strict()
+
+export const reportQuerySchema = z.object({
+    minDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'date debe tener formato YYYY-MM-DD').optional(),
+    maxDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'date debe tener formato YYYY-MM-DD').optional(),
+    minTotalSpent: z.coerce.number().min(0).optional(),
+})

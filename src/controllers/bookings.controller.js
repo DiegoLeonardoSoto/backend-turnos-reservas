@@ -14,6 +14,25 @@ export const getAllBookings = async (_, res) => {
     }
 }
 
+export const getBookingsReport = async (req, res) => {
+
+    const filters = {
+        minDate: req.query.minDate,
+        maxDate: req.query.maxDate,
+        minTotalSpent: req.query.minTotalSpent,
+    }
+
+    try {
+        const report = await bookingsService.getBookingsReport(filters)
+        return res.status(200).json({
+            status: 'success',
+            payload: report
+        })
+    } catch (error) {
+        return sendError(res, error, 'Error al obtener reporte de reservas')
+    }
+}
+
 export const createBooking = async (req, res) => {
 
   try {
@@ -49,7 +68,7 @@ export const getBookingById = async (req, res) => {
     }
   }
 
-  export const addServiceToBooking = async (req, res) => {
+export const addServiceToBooking = async (req, res) => {
 
       const { bid, sid } = req.params
       const { quantity } = req.body

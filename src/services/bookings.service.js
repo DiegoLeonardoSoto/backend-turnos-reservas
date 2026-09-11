@@ -11,6 +11,10 @@ export class BookingsService {
         return this.#repository.getAll()
     }
 
+    async getBookingsReport(filters) {
+        return this.#repository.getReport(filters)
+    }
+
     async createBooking({ clientName, clientEmail, date, time, status, service }) {
 
         const serviceData = await this.#servicesService.getServiceById(service.sid)

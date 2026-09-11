@@ -8,6 +8,10 @@ export class BookingsRepository {
         return this.#dao.getAll()
     }
 
+    async getReport(filters) {
+        return this.#dao.getReport(filters)
+    }
+
     async create(data) {
         return this.#dao.create(data)
     }
