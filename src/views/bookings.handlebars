@@ -1,18 +1,16 @@
 <h1>Reservas</h1>
 
-{{#each bookings}}
-  <div class="card" id="booking-{{_id}}">
-    <hr>
-    <h2>Reserva de {{clientName}}</h2>
-    <p><strong>Email:</strong> {{clientEmail}}</p>
-    <p><strong>Fecha:</strong> {{date}}</p>
-    <p><strong>Hora:</strong> {{time}}</p>
-    <p><strong>Estado:</strong> <span class="status status-{{status}}">{{status}}</span></p>
-    <ul id="booking-{{_id}}-services">
-      {{#each services}}
-        <li>Servicio: {{this.service}} — Cantidad: {{this.quantity}}</li>
-      {{/each}}
-    </ul>
-    <a href="/views/bookings/{{_id}}" class="btn">Ver detalle</a>
-  </div>
-{{/each}}
+{{#if bookings.length}}
+  {{#each bookings}}
+    <div class="card" id="booking-{{_id}}">
+      <hr>
+      <h2>Reserva de {{clientName}}</h2>
+      <p><strong>Fecha:</strong> {{date}}</p>
+      <p><strong>Hora:</strong> {{time}}</p>
+      <p><strong>Total gastado:</strong> ${{totalSpent}}</p>
+      <a href="/views/bookings/{{_id}}" class="btn">Ver detalle</a>
+    </div>
+  {{/each}}
+{{else}}
+  <p class="empty-message">No hay reservas.</p>
+{{/if}}

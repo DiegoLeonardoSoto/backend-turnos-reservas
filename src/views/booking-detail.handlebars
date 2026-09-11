@@ -10,7 +10,7 @@
   <h3>Servicios</h3>
   <ul id="booking-{{booking._id}}-services">
     {{#each booking.services}}
-      <li>Servicio: {{this.service}} — Cantidad: {{this.quantity}}</li>
+      <li>{{this.service.name}} — Cant: {{this.quantity}} — {{this.service.duration}}min — ${{this.service.price}}/u</li>
     {{/each}}
   </ul>
 

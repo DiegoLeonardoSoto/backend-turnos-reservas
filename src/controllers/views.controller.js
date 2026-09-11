@@ -4,10 +4,10 @@ import { sendError } from "../utils/sendError.js"
 
 export const servicesView = async (req, res) => {
     try {
-        const services = await servicesService.getServices(req.query)
+        const {docs} = await servicesService.getServices(req.query)
 
         res.render('services', {
-            services
+            services: docs
         })
 
     } catch (error) {
@@ -19,7 +19,7 @@ export const serviceDetailView = async (req, res) => {
     try {
         const service = await servicesService.getServiceById(req.params.sid)
         if (!service) {
-            return res.status(404).render('error', { message: 'Servicio no encontrado' })
+            return sendError(res, { statusCode: 404, message: 'Servicio no encontrado' })
         }
         res.render('service-detail', { service })
     } catch (error) {
@@ -28,8 +28,15 @@ export const serviceDetailView = async (req, res) => {
 }
 
 export const bookingsView = async (req, res) => {
+
+  const filters = {
+      minDate: req.query.minDate,
+      maxDate: req.query.maxDate,
+      minTotalSpent: req.query.minTotalSpent,
+  }
+
     try {
-        const bookings = await bookingsService.getAllBookings()
+        const bookings = await bookingsService.getBookingsReport(filters)
         res.render('bookings', { bookings })
     } catch (error) {
         return sendError(res, error, 'Error al cargar la vista')
@@ -40,7 +47,7 @@ export const bookingDetailView = async (req, res) => {
     try {
       const booking = await bookingsService.getBookingById(req.params.bid)
       if (!booking) {
-          return res.status(404).render('error', { message: 'Reserva no encontrada' })
+          return sendError(res, { statusCode: 404, message: 'Reserva no encontrada' })
       }
       res.render('booking-detail', { booking })
     } catch (error) {
