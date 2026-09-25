@@ -27,4 +27,8 @@ export class BookingsRepository {
     async addService(id, service) {
         return this.#dao.addService(id, service)
     }
+
+    async removeService(id, service) {
+        return this.#dao.removeService(id, service)
+    }
 }

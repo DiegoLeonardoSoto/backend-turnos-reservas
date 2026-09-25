@@ -31,4 +31,8 @@ export class ServicesRepository {
     reserveService(id, quantity) {
         return this.#dao.reserveService(id, quantity)
     }
+
+    releaseService(id, toRelease) {
+        return this.#dao.releaseService(id, toRelease)
+    }
 }

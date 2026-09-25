@@ -57,5 +57,19 @@ export default class ServicesMongoDAO {
       )
     }
 
+    async releaseService(id, toRelease) {
+        return serviceModel.findOneAndUpdate(
+            {
+                _id: id,
+                $expr: {
+                    $gte:["$reserved", toRelease]
+                }
+            },
+            { $inc: { reserved: -toRelease } },
+            { returnDocument: 'after'}
+
+        )
+    }
+
 
 }

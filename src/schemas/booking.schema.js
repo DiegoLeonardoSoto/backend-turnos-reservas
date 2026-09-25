@@ -5,7 +5,7 @@ export const bookingParamsSchema = z.object({
     bid: objectIdSchema
 })
 
-export const addServiceParamSchema = bookingParamsSchema.extend({
+export const serviceParamSchema = bookingParamsSchema.extend({
     sid: objectIdSchema
 })
 
@@ -23,6 +23,10 @@ export const createBookingSchema = z.object({
 
 export const addServiceSchema = z.object({
     quantity: z.coerce.number().int().min(1).default(1)
+}).strict()
+
+export const removeServiceSchema = z.object({
+    quantity: z.coerce.number().int().min(0).default(0)
 }).strict()
 
 export const reportQuerySchema = z.object({

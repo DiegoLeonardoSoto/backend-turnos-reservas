@@ -90,3 +90,23 @@ export const addServiceToBooking = async (req, res) => {
     }
 
 }
+
+export const removeServiceFromBooking = async (req, res) => {
+  const { bid, sid } = req.params
+  const { quantity } = req.body
+    try {
+        const serviceRemoved = await bookingsService.removeServiceFromBooking(bid, sid, quantity)
+
+        if (!serviceRemoved) {
+            return sendError(res, { statusCode: 404, message: 'Booking or Service not found' })
+        }
+
+        return res.status(201).json({
+            status: 'success',
+            payload: serviceRemoved
+        })
+
+  } catch (error) {
+      return sendError(res, error, 'Error al quitar servicio')
+  }
+}

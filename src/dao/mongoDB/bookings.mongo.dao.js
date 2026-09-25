@@ -96,4 +96,34 @@ export class BookingsMongoDAO {
         return bookingModel.findById(id).populate("services.service").lean()
     }
 
+    async removeService(id, service) {
+
+        if (service.quantity=== 0) {
+          return bookingModel.findByIdAndUpdate(
+              {
+                  _id: id,
+                  "services.service": service.sid
+              },
+              { $pull: { services: { service: service.sid } } },
+              { returnDocument: 'after' }
+          )
+        }
+
+        return bookingModel.findOneAndUpdate(
+            {
+                _id: id
+            },
+            { $set: {"services.$[item].quantity": service.quantity}
+            },
+            {
+                arrayFilters: [
+                    {
+                        "item.service": service.sid
+                    }
+                ],
+                returnDocument: "after"
+                }
+          )
+      }
+
 }
