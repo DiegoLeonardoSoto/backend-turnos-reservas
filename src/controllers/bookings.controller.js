@@ -49,6 +49,21 @@ export const createBooking = async (req, res) => {
 
 }
 
+export const updateBooking = async (req, res) => {
+  const { bid } = req.params
+
+  try {
+    const updatedBooking = await bookingsService.updateBooking(bid, req.body)
+
+    return res.status(200).json({
+      status: 'success',
+      payload: updatedBooking
+    })
+  } catch (error) {
+    return sendError(res, error, 'Error al actualizar reserva')
+  }
+}
+
 export const getBookingById = async (req, res) => {
   const { bid } = req.params
 

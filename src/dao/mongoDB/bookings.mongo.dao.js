@@ -70,6 +70,10 @@ export class BookingsMongoDAO {
         return bookingModel.create(data)
     }
 
+    async update(id, data) {
+        return bookingModel.findByIdAndUpdate(id, data, { returnDocument: 'after' })
+    }
+
     async getById(id) {
         return bookingModel.findById(id).populate("services.service").lean()
     }

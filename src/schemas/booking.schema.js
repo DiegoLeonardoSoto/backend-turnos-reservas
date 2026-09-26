@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { objectIdSchema } from './id.schema.js'
+import { refine } from 'zod/mini'
 
 export const bookingParamsSchema = z.object({
     bid: objectIdSchema
@@ -20,6 +21,12 @@ export const createBookingSchema = z.object({
         quantity: z.coerce.number().int().min(1).default(1)
     })
 }).strict()
+
+export const updateBookingSchema = createBookingSchema
+    .omit( {service:true} )
+    .partial()
+    .strict()
+    .refine( (data) => Object.keys(data).length > 0, 'debe proporcionar al menos un campo para actualizar' )
 
 export const addServiceSchema = z.object({
     quantity: z.coerce.number().int().min(1).default(1)

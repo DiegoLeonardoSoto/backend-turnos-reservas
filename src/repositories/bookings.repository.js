@@ -16,6 +16,10 @@ export class BookingsRepository {
         return this.#dao.create(data)
     }
 
+    async update(id, data) {
+        return this.#dao.update(id, data)
+    }
+
     async getById(id) {
         return this.#dao.getById(id)
     }

@@ -28,6 +28,10 @@ export class BookingsService {
         return this.#repository.create({ clientName, clientEmail, date, time, status, services:[ {service: service.sid, quantity: service.quantity} ] })
     }
 
+    async updateBooking(id, data) {
+        return this.#repository.update(id, data)
+    }
+
     async getBookingById(id) {
         const booking = await this.#repository.getById(id)
         if (!booking) return null
