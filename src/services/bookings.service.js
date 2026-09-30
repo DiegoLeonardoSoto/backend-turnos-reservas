@@ -1,3 +1,5 @@
+import { runInTransaction } from "../utils/transactions.js"
+
 export class BookingsService {
     #repository
     #servicesService
@@ -33,16 +35,18 @@ export class BookingsService {
     }
 
     async deleteBooking(id) {
-      const bookingData = await this.#repository.getById(id)
-      if (!bookingData) return null
+        return runInTransaction(async (session) => {
+          const bookingData = await this.#repository.getById(id)
+          if (!bookingData) return null
+
+            for (const service of bookingData.services) {
+             const released = await this.#servicesService.releaseService(service.service._id.toString(), service.quantity, session)
+             if(!released) throw new Error('Failed to release service')
+            }
 
 
-      await Promise.all(
-        bookingData.services.map(service => this.#servicesService.releaseService(service.service._id.toString(), service.quantity))
-      )
-
-
-      return this.#repository.delete(id)
+          return this.#repository.delete(id, session)
+      } )
     }
 
     async getBookingById(id) {

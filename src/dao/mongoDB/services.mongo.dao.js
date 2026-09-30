@@ -57,7 +57,7 @@ export default class ServicesMongoDAO {
       )
     }
 
-    async releaseService(id, toRelease) {
+    async releaseService(id, toRelease, session) {
         return serviceModel.findOneAndUpdate(
             {
                 _id: id,
@@ -66,7 +66,7 @@ export default class ServicesMongoDAO {
                 }
             },
             { $inc: { reserved: -toRelease } },
-            { returnDocument: 'after'}
+            { returnDocument: 'after', session }
 
         )
     }

@@ -70,12 +70,8 @@ export class BookingsMongoDAO {
         return bookingModel.create(data)
     }
 
-    async update(id, data) {
-        return bookingModel.findByIdAndUpdate(id, data, { returnDocument: 'after' })
-    }
-
-    async delete(id) {
-        return bookingModel.findByIdAndDelete(id)
+    async delete(id, session) {
+        return bookingModel.findByIdAndDelete(id, { session })
     }
 
     async getById(id) {

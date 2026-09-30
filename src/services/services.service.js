@@ -36,8 +36,8 @@ export class ServicesService {
         return this.#repository.reserveService(id, quantity)
     }
 
-    async releaseService(id, toRelease) {
-        return this.#repository.releaseService(id, toRelease)
+    async releaseService(id, toRelease, session) {
+        return this.#repository.releaseService(id, toRelease, session)
     }
 
 }

@@ -32,7 +32,7 @@ export class ServicesRepository {
         return this.#dao.reserveService(id, quantity)
     }
 
-    releaseService(id, toRelease) {
-        return this.#dao.releaseService(id, toRelease)
+    releaseService(id, toRelease, session) {
+        return this.#dao.releaseService(id, toRelease, session)
     }
 }
