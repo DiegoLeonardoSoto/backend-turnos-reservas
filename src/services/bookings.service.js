@@ -32,6 +32,19 @@ export class BookingsService {
         return this.#repository.update(id, data)
     }
 
+    async deleteBooking(id) {
+      const bookingData = await this.#repository.getById(id)
+      if (!bookingData) return null
+
+
+      await Promise.all(
+        bookingData.services.map(service => this.#servicesService.releaseService(service.service._id.toString(), service.quantity))
+      )
+
+
+      return this.#repository.delete(id)
+    }
+
     async getBookingById(id) {
         const booking = await this.#repository.getById(id)
         if (!booking) return null
@@ -54,8 +67,6 @@ export class BookingsService {
 
     async removeServiceFromBooking(bid, sid, quantity) {
 
-        console.log(bid, sid, quantity)
-
       const bookingData = await this.#repository.getById(bid)
       if (!bookingData) return null
 
@@ -65,7 +76,6 @@ export class BookingsService {
 
 
         const service = bookingData.services.find(s => s.service._id.toString() === sid)
-        console.log(service)
       if (!service) throw { statusCode: 404, message: 'Service not found' }
 
       const serviceQuantity = service.quantity

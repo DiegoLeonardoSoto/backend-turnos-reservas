@@ -83,6 +83,25 @@ export const getBookingById = async (req, res) => {
     }
   }
 
+export const deleteBooking = async (req, res) => {
+  const { bid } = req.params
+
+  try {
+    const deletedBooking = await bookingsService.deleteBooking(bid)
+
+    if (!deletedBooking) {
+      return sendError(res, { statusCode: 404, message: 'Booking not found' })
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      payload: deletedBooking
+    })
+  } catch (error) {
+    return sendError(res, error, 'Error al eliminar reserva')
+  }
+}
+
 export const addServiceToBooking = async (req, res) => {
 
       const { bid, sid } = req.params

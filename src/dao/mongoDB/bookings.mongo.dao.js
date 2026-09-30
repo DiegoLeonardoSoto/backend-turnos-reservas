@@ -74,6 +74,10 @@ export class BookingsMongoDAO {
         return bookingModel.findByIdAndUpdate(id, data, { returnDocument: 'after' })
     }
 
+    async delete(id) {
+        return bookingModel.findByIdAndDelete(id)
+    }
+
     async getById(id) {
         return bookingModel.findById(id).populate("services.service").lean()
     }
@@ -103,7 +107,7 @@ export class BookingsMongoDAO {
     async removeService(id, service) {
 
         if (service.quantity=== 0) {
-          return bookingModel.findByIdAndUpdate(
+          return bookingModel.findOneAndUpdate(
               {
                   _id: id,
                   "services.service": service.sid
