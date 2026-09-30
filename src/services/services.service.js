@@ -1,7 +1,9 @@
 export class ServicesService {
     #repository
-    constructor(repository) {
+    #bookingsRepository
+    constructor(repository, bookingsRepository) {
       this.#repository = repository
+      this.#bookingsRepository = bookingsRepository
     }
 
     async getServices(filters = {}) {
@@ -24,8 +26,11 @@ export class ServicesService {
         return this.#repository.update(id, data)
     }
 
+
     async deleteService(id) {
-        return this.#repository.delete(id)
+      const isServiceReserved = await this.#bookingsRepository.isServiceReserved(id)
+      if (isServiceReserved) throw {statusCode: 409, message: 'Service is reserved'}
+      return this.#repository.delete(id)
     }
 
     async toggleAvailability(id) {

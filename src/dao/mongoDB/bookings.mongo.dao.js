@@ -130,4 +130,7 @@ export class BookingsMongoDAO {
           )
       }
 
+    async isServiceReserved(sid) {
+        return bookingModel.exists({ "services.service": sid })
+    }
 }

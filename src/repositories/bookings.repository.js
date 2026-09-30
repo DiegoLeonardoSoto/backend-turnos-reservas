@@ -35,4 +35,8 @@ export class BookingsRepository {
     async removeService(id, service) {
         return this.#dao.removeService(id, service)
     }
+
+    async isServiceReserved(sid) {
+        return this.#dao.isServiceReserved(sid)
+    }
 }
