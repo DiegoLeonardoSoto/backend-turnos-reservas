@@ -150,6 +150,8 @@ Categorías válidas (`category`):
 | `PUT` | `/api/services/:sid` | Actualizar un servicio |
 | `DELETE` | `/api/services/:sid` | Eliminar un servicio |
 
+> `DELETE /api/services/:sid` devuelve `409` si el servicio tiene reservas asociadas — no se puede eliminar un servicio con turnos.
+
 ### Filtros, paginación y ordenamiento
 
 `GET /api/services` acepta los siguientes query params:
@@ -279,7 +281,10 @@ Cada reserva representa un turno asignado a un cliente, compuesto por uno o más
 | `GET` | `/api/bookings/report` | Reporte de reservas (ver sección siguiente) |
 | `POST` | `/api/bookings` | Crear una reserva |
 | `GET` | `/api/bookings/:bid` | Obtener una reserva con sus servicios completos (`populate`) |
+| `PUT` | `/api/bookings/:bid` | Actualizar los metadatos de una reserva (cliente, fecha, hora, estado) |
+| `DELETE` | `/api/bookings/:bid` | Eliminar una reserva y liberar los cupos de todos sus servicios |
 | `POST` | `/api/bookings/:bid/services/:sid` | Agregar un servicio a una reserva |
+| `PATCH` | `/api/bookings/:bid/services/:sid` | Quitar un servicio (o reducir su cantidad) de una reserva |
 
 ### Crear una reserva
 
@@ -309,6 +314,9 @@ Al crear una reserva se reserva el cupo del servicio (incrementa `reserved`):
 
 - Si el servicio no existe → `404`.
 - Si no hay cupo o el servicio no está disponible → `409`.
+- Si ya existe una reserva para el mismo cliente, día y hora → `409`.
+
+> Existe un índice único compuesto sobre `(date, time, clientEmail)` que impide crear dos reservas idénticas para la misma franja horaria.
 
 ### Obtener una reserva con servicios completos
 
@@ -391,6 +399,35 @@ Response 200:
 
 ---
 
+## Transacciones y consistencia de cupos
+
+Las operaciones que modifican **dos colecciones a la vez** (`bookings` y `services.reserved`) se ejecutan dentro de una **transacción de MongoDB** para garantizar atomicidad: o se aplican todos los cambios, o ninguno.
+
+### Operaciones transaccionales
+
+| Operación | Escribe en `services` | Escribe en `bookings` |
+|-----------|----------------------|----------------------|
+| Crear reserva (`POST /api/bookings`) | `reserveService` (+cupo) | `create` |
+| Agregar servicio (`POST /:bid/services/:sid`) | `reserveService` (+cupo) | `addService` |
+| Quitar servicio (`PATCH /:bid/services/:sid`) | `releaseService` (−cupo) | `removeService` |
+| Eliminar reserva (`DELETE /:bid`) | `releaseService` (−cupo, N veces) | `delete` |
+
+La lógica está orquestada por el helper `runInTransaction` (`src/utils/transactions.js`), que abre una `session`, ejecuta la operación dentro de `session.withTransaction(...)` y libera la session siempre. La `session` viaja como parámetro opcional a través de las capas (`service → repository → DAO`) hasta las operaciones de Mongoose.
+
+### Por qué transacciones
+
+`service.reserved` es un contador desnormalizado que debe mantenerse sincronizado con el array `services` de cada reserva. Sin transacción, un fallo a mitad de la secuencia dejaría la base inconsistente: por ejemplo, cupo reservado pero reserva no creada, o cupos liberados de una reserva que sigue existiendo. La transacción garantiza que si cualquier paso falla, **todo se revierte**.
+
+### Requisito: replica set
+
+Las transacciones multi-documento en MongoDB requieren un **replica set**. **MongoDB Atlas** (incluso el tier gratuito M0) lo provee por defecto, por lo que la conexión configurada en `MONGO_URI` ya soporta transacciones. Un `mongod` **standalone local no**: al ejecutar la app contra una instancia local sin replica set, las operaciones transaccionales fallarán con *"Transaction numbers are only allowed on a replica set member or mongos"*.
+
+### Limitación conocida
+
+El read previo (`getById` / `getServiceById`) se realiza **fuera** de la transacción (sin `session`). Esto deja una pequeña ventana de carrera entre la lectura y la escritura. Para un sistema de turnos de baja concurrencia es aceptable, pero es una limitación a tener en cuenta.
+
+---
+
 ## Manejo de errores
 
 | Situación | Status |
@@ -398,6 +435,8 @@ Response 200:
 | Validación fallida (Zod) | `400` con mensaje claro |
 | Recurso no encontrado | `404` |
 | Sin cupo / servicio no disponible | `409` |
+| Reserva duplicada (mismo cliente, día y hora) | `409` |
+| Eliminar un servicio que tiene reservas | `409` |
 | Error no controlado | `500` |
 
 Las respuestas negocian contenido: JSON para la API, HTML (`error.handlebars`) para las vistas.
