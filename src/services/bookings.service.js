@@ -18,16 +18,20 @@ export class BookingsService {
     }
 
     async createBooking({ clientName, clientEmail, date, time, status, service }) {
+        return runInTransaction(async (session) => {
+            const serviceData = await this.#servicesService.getServiceById(service.sid)
+            if (!serviceData) throw {statusCode: 404, message: 'Service not found'}
 
-        const serviceData = await this.#servicesService.getServiceById(service.sid)
+            const isReserved = await this.#servicesService.reserveService(service.sid, service.quantity, session)
+            if (!isReserved) throw {statusCode: 409, message: 'Service not available'}
 
-        if ( !serviceData ) throw {statusCode: 404, message: 'Service not found'}
-
-        const isReserved = await this.#servicesService.reserveService(service.sid, service.quantity)
-
-        if (!isReserved) throw {statusCode: 409, message: 'Service not available'}
-
-        return this.#repository.create({ clientName, clientEmail, date, time, status, services:[ {service: service.sid, quantity: service.quantity} ] })
+            try {
+                return this.#repository.create({ clientName, clientEmail, date, time, status, services:[ {service: service.sid, quantity: service.quantity} ] }, session)
+            } catch (error) {
+                if (error?.code === 11000) throw {statusCode: 409, message: 'Booking already exists'}
+                throw error
+            }
+        })
     }
 
     async updateBooking(id, data) {
@@ -56,41 +60,41 @@ export class BookingsService {
     }
 
     async addServiceToBooking(bid, sid, quantity = 1) {
+        return runInTransaction(async (session) => {
+            const bookingData = await this.#repository.getById(bid)
+            if (!bookingData) return null
 
-        const bookingData = await this.#repository.getById(bid)
-        if (!bookingData) return null
+            const serviceData = await this.#servicesService.getServiceById(sid)
+            if (!serviceData) return null
 
-        const serviceData = await this.#servicesService.getServiceById(sid)
-        if (!serviceData) return null
+            const isReserved = await this.#servicesService.reserveService(sid, quantity, session)
+            if (!isReserved) throw {statusCode: 409, message: 'Service not available'}
 
-        const isReserved = await this.#servicesService.reserveService(sid, quantity)
-        if (!isReserved) throw {statusCode: 409, message: 'Service not available'}
-
-        return this.#repository.addService(bid, { sid, quantity })
+            return this.#repository.addService(bid, { sid, quantity }, session)
+        })
     }
 
     async removeServiceFromBooking(bid, sid, quantity) {
+        return runInTransaction(async (session) => {
+            const bookingData = await this.#repository.getById(bid)
+            if (!bookingData) return null
 
-      const bookingData = await this.#repository.getById(bid)
-      if (!bookingData) return null
+            const serviceData = await this.#servicesService.getServiceById(sid)
+            if (!serviceData) return null
 
-      const serviceData = await this.#servicesService.getServiceById(sid)
-        if (!serviceData) return null
+            const service = bookingData.services.find(s => s.service._id.toString() === sid)
+            if (!service) throw { statusCode: 404, message: 'Service not found' }
 
+            const serviceQuantity = service.quantity
 
+            if (quantity >= serviceQuantity) throw { statusCode: 409, message: 'Quantity to remove cannot be greater or equal than service quantity' }
 
-        const service = bookingData.services.find(s => s.service._id.toString() === sid)
-      if (!service) throw { statusCode: 404, message: 'Service not found' }
+            const toRelease = serviceQuantity - quantity
 
-      const serviceQuantity = service.quantity
+            const isReleased = await this.#servicesService.releaseService(sid, toRelease, session)
+            if (!isReleased) throw { statusCode: 409, message: 'Service not released' }
 
-      if (quantity >= serviceQuantity) throw { statusCode: 409, message: 'Quantity to remove cannot be greater or equal than service quantity' }
-
-      const toRelease = serviceQuantity - quantity
-
-      const isReleased = await this.#servicesService.releaseService(sid, toRelease)
-        if (!isReleased) throw { statusCode: 409, message: 'Service not released' }
-
-      return this.#repository.removeService(bid, {sid, quantity})
+            return this.#repository.removeService(bid, {sid, quantity}, session)
+        })
     }
 }

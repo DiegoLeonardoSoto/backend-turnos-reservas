@@ -50,4 +50,8 @@ const bookingsSchema = new mongoose.Schema(
     }
 )
 
+// indice compuesto
+bookingsSchema.index({ date: 1, time: 1, clientEmail: 1 }, { unique: true })
+
+
 export const bookingModel = mongoose.model('Booking', bookingsSchema)

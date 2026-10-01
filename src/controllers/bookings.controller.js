@@ -135,7 +135,7 @@ export const removeServiceFromBooking = async (req, res) => {
             return sendError(res, { statusCode: 404, message: 'Booking or Service not found' })
         }
 
-        return res.status(201).json({
+        return res.status(200).json({
             status: 'success',
             payload: serviceRemoved
         })

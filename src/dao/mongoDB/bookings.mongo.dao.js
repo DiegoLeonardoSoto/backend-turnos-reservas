@@ -66,8 +66,8 @@ export class BookingsMongoDAO {
         return bookingModel.aggregate(pipeline)
     }
 
-    async create(data) {
-        return bookingModel.create(data)
+    async create(data, session) {
+        return new bookingModel(data).save({ session })
     }
 
     async delete(id, session) {
@@ -82,25 +82,27 @@ export class BookingsMongoDAO {
         return bookingModel.findByIdAndUpdate(id, data, { returnDocument: 'after' })
     }
 
-    async addService(id, service) {
+    async addService(id, service, session) {
 
         const result = await bookingModel.updateOne({
             _id: id, "services.service": service.sid
         },
-        { $inc: { "services.$.quantity": service.quantity } }
+        { $inc: { "services.$.quantity": service.quantity } },
+        { session }
         )
 
         if (result.matchedCount === 0) {
             await bookingModel.updateOne(
                 { _id: id },
-                { $push: { services: { service: service.sid, quantity: service.quantity } } }
+                { $push: { services: { service: service.sid, quantity: service.quantity } } },
+                { session }
             )
         }
 
-        return bookingModel.findById(id).populate("services.service").lean()
+        return bookingModel.findById(id, {}, { session }).populate("services.service").lean()
     }
 
-    async removeService(id, service) {
+    async removeService(id, service, session) {
 
         if (service.quantity=== 0) {
           return bookingModel.findOneAndUpdate(
@@ -109,7 +111,7 @@ export class BookingsMongoDAO {
                   "services.service": service.sid
               },
               { $pull: { services: { service: service.sid } } },
-              { returnDocument: 'after' }
+              { returnDocument: 'after', session }
           )
         }
 
@@ -125,7 +127,8 @@ export class BookingsMongoDAO {
                         "item.service": service.sid
                     }
                 ],
-                returnDocument: "after"
+                returnDocument: "after",
+                session
                 }
           )
       }

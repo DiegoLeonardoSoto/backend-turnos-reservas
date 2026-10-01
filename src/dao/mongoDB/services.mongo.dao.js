@@ -43,7 +43,7 @@ export default class ServicesMongoDAO {
       )
     }
 
-    async reserveService(id, quantity) {
+    async reserveService(id, quantity, session) {
       return serviceModel.findOneAndUpdate(
           {
               _id: id,
@@ -53,7 +53,7 @@ export default class ServicesMongoDAO {
               }
           },
           { $inc: { reserved: quantity } },
-          { returnDocument: 'after'}
+          { returnDocument: 'after', session }
       )
     }
 

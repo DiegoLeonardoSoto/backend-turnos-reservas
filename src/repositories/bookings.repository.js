@@ -12,8 +12,8 @@ export class BookingsRepository {
         return this.#dao.getReport(filters)
     }
 
-    async create(data) {
-        return this.#dao.create(data)
+    async create(data, session) {
+        return this.#dao.create(data, session)
     }
 
     async update(id, data) {
@@ -28,12 +28,12 @@ export class BookingsRepository {
         return this.#dao.delete(id, session)
     }
 
-    async addService(id, service) {
-        return this.#dao.addService(id, service)
+    async addService(id, service, session) {
+        return this.#dao.addService(id, service, session)
     }
 
-    async removeService(id, service) {
-        return this.#dao.removeService(id, service)
+    async removeService(id, service, session) {
+        return this.#dao.removeService(id, service, session)
     }
 
     async isServiceReserved(sid) {

@@ -28,8 +28,8 @@ export class ServicesRepository {
         return this.#dao.toggleAvailability(id)
     }
 
-    reserveService(id, quantity) {
-        return this.#dao.reserveService(id, quantity)
+    reserveService(id, quantity, session) {
+        return this.#dao.reserveService(id, quantity, session)
     }
 
     releaseService(id, toRelease, session) {
